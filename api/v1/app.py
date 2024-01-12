@@ -1,14 +1,16 @@
 #!/usr/bin/python3
 """ AirBnB v3 flask Api v1 entry point """
 from os import getenv
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 from flask_cors import CORS
 from models import storage
 from api.v1.views import app_views
+from flasgger import Swagger
+from flasgger.utils import swag_from
 
 app = Flask(__name__)
-
-CORS(app, resources={r'/api/v1/*': {'origins': '0.0.0.0'}})
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 app.register_blueprint(app_views)
 app.url_map.strict_slashes = False
@@ -25,6 +27,14 @@ def not_found(exception):
 def teardown(exception):
     """Cleanup operations"""
     storage.close()
+
+
+
+app.config['SWAGGER'] = {
+    'title': 'AirBnB clone Restful API',
+    'uiversion': 3
+}
+Swagger(app)
 
 
 if __name__ == "__main__":
